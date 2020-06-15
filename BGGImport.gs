@@ -26,14 +26,17 @@ function get_collection(sheet, user, last_updated) {
   
   // parse fields from XML
   // eventually loop to parse all items returned
-  var id, title, rating, time, id_link, players, subdomains, categories, mechanics;
+  var id, title, rating, time, id_link, players, subdomains, categories, mechanics, last_mod;
   
+  // get game BGG ID, name, average rating, play time,and date of last status modification
   for(var i = 0; i < collection.length; i++) {
     id = collection[i].getAttribute('objectid').getValue();
     title = collection[i].getChild('name').getText();
     rating = collection[i].getChild('stats').getChild('rating').getChild('average').getAttribute('value').getValue();
     time = collection[i].getChild('stats').getAttribute('playingtime').getValue();
     id_link = '=HYPERLINK("https://boardgamegeek.com/boardgame/' + id + '","' + id + '")';
+    
+    last_mod = collection[i].getChild('status').getAttribute('lastmodified').getValue();
     
     var game_details = get_game_details(id);
     
@@ -44,7 +47,7 @@ function get_collection(sheet, user, last_updated) {
     categories = get_categories(game_details);
     mechanics = get_mechanics(game_details);
     
-    sheet.appendRow([id_link, title, rating, time, players, subdomains, categories, mechanics]);
+    sheet.appendRow([id_link, title, rating, time, players, subdomains, categories, mechanics, last_mod]);
   }
   
 }
