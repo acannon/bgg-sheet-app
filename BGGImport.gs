@@ -40,11 +40,11 @@ function get_collection(sheet, user, last_updated) {
     Logger.log("game details: " + game_details);
     
     players = get_players(game_details);
-    //subdomains = get_subdomains(game_details);
-    //categories = get_categories(game_details);
-    //mechanics = get_mechanics(game_details);
+    subdomains = get_subdomains(game_details);
+    categories = get_categories(game_details);
+    mechanics = get_mechanics(game_details);
     
-    sheet.appendRow([id_link, title, rating, time, players]);
+    sheet.appendRow([id_link, title, rating, time, players, subdomains, categories, mechanics]);
   }
   
 }
@@ -63,7 +63,6 @@ function get_game_details(id) {
 
 // get 'best with' player count
 function get_players(game_details) {
-  Logger.log("In get players...");
   var polls = game_details.getChildren('poll');
   
   var player_poll;
@@ -87,7 +86,7 @@ function get_players(game_details) {
     var curr = results[i].getAttribute('numplayers').getValue();
     var curr_best_votes = parseInt(results[i].getChild('result').getAttribute('numvotes').getValue());
     
-    Logger.log("max_votes: " + max_votes + ", curr_votes: " + curr_best_votes);
+    // Logger.log("max_votes: " + max_votes + ", curr_votes: " + curr_best_votes);
     
     if(first == 1) {
       best_at = curr;
@@ -105,25 +104,40 @@ function get_players(game_details) {
     
   } // end for loop
   
-  Logger.log("best_at: " + best_at);
-  
   return best_at;
   
 }
 
-// get 'best with' player count
+// get all subdomains
 function get_subdomains(game_details) {
+  return get_classifications(game_details.getChildren('boardgamesubdomain'));
   
 }
 
-// get 'best with' player count
+// get all categories
 function get_categories(game_details) {
+  return get_classifications(game_details.getChildren('boardgamecategory'));
   
 }
 
-// get 'best with' player count
+// get all mechanics
 function get_mechanics(game_details) {
+  return get_classifications(game_details.getChildren('boardgamemechanic'));
   
+}
+
+function get_classifications(nodes) {
+  var res = "";
+  
+  for(var i = 0; i < nodes.length; i++) {
+    if(i == 0)
+      res = nodes[i].getText();
+    else
+      res = res + ", " + nodes[i].getText();
+  }
+  
+  return res;
+
 }
 
 
