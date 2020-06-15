@@ -39,12 +39,12 @@ function get_collection(sheet, user, last_updated) {
     
     Logger.log("game details: " + game_details);
     
-    //players = get_players(game_details);
+    players = get_players(game_details);
     //subdomains = get_subdomains(game_details);
     //categories = get_categories(game_details);
     //mechanics = get_mechanics(game_details);
     
-    sheet.appendRow([id_link, title, rating, time]);
+    sheet.appendRow([id_link, title, rating, time, players]);
   }
   
 }
@@ -56,12 +56,58 @@ function get_game_details(id) {
   
   var xml = response.getContentText();
   var doc = XmlService.parse(xml);
+  
   return doc.getRootElement().getChild('boardgame');
   
 }
 
 // get 'best with' player count
 function get_players(game_details) {
+  Logger.log("In get players...");
+  var polls = game_details.getChildren('poll');
+  
+  var player_poll;
+  
+  // loop through <poll> elements to find number of players poll
+  for(var i = 0; i < polls.length; i++) {
+    if(polls[i].getAttribute('name').getValue() == "suggested_numplayers") {
+      player_poll = polls[i];
+      break;
+    }
+  }
+  
+  // loop through <poll name=suggested_numplayers> <results> to find get max Best votes
+  var max_votes = 0;
+  var best_at = "";
+  var results = player_poll.getChildren()
+  var first = 1;
+  
+  // curr is the 'number of players'
+  for(var i = 0; i < results.length; i++) {
+    var curr = results[i].getAttribute('numplayers').getValue();
+    var curr_best_votes = parseInt(results[i].getChild('result').getAttribute('numvotes').getValue());
+    
+    Logger.log("max_votes: " + max_votes + ", curr_votes: " + curr_best_votes);
+    
+    if(first == 1) {
+      best_at = curr;
+      first = 0;
+    }
+    
+    else if(curr_best_votes > max_votes) {
+      best_at = curr;
+      max_votes = curr_best_votes;
+    }
+     
+    else if(curr_best_votes == max_votes) {
+        best_at = best_at + "," + curr;
+    }
+    
+  } // end for loop
+  
+  Logger.log("best_at: " + best_at);
+  
+  return best_at;
   
 }
 
