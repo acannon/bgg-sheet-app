@@ -65,6 +65,9 @@ function get_game_details(id) {
 function get_players(game_details) {
   var polls = game_details.getChildren('poll');
   
+  if(polls == null)
+    return "";
+  
   var player_poll;
   
   // loop through <poll> elements to find number of players poll
@@ -80,6 +83,9 @@ function get_players(game_details) {
   var best_at = "";
   var results = player_poll.getChildren()
   var first = 1;
+  
+  if(results == null || results[0].getChild('result') == null)
+    return "";
   
   // curr is the 'number of players'
   for(var i = 0; i < results.length; i++) {
@@ -127,6 +133,9 @@ function get_mechanics(game_details) {
 }
 
 function get_classifications(nodes) {
+  if(nodes == null)
+    return "";
+  
   var res = "";
   
   for(var i = 0; i < nodes.length; i++) {
