@@ -10,6 +10,12 @@ function bgg_import() {
   // make color red for "not checked"
   
   // @TODO: user must check results; if corrections are needed, update ID and run "update by ID"
+  
+  // change last updated date to today
+  var now = new Date();
+  var MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
+  var tomorrow = new Date(now.getTime() + MILLIS_PER_DAY);
+  sheet.getRange('B1').setValue(tomorrow);
 }
 
 // get collection based on username and date last updated
